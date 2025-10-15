@@ -176,4 +176,4 @@ function start() {
   play(board, player, bot, winner);
 }
 
-start(); 
+start();
