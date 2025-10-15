@@ -53,51 +53,70 @@ function emptyCells(board) {
   }
   return empty;
 }
-
-function botChance(board, bot, player) {
-  const empty = emptyCells(board);
-  //win
-  for (let index = 0; index < empty.length; index++) {
-    const emptyIndex = empty[index][0];
-    const emptyInnerIndex = empty[index][1];
-    board[emptyIndex][emptyInnerIndex] = bot;
-    if (checkWinner(board) === bot) {
-      return;
-    }
-    board[emptyIndex][emptyInnerIndex] = "  ";
-  }
-
-  //block
-  for (let index = 0; index < empty.length; index++) {
-    const emptyIndex = empty[index][0];
-    const emptyInnerIndex = empty[index][1];
-    board[emptyIndex][emptyInnerIndex] = player;
-    if (checkWinner(board) === player) {
-      board[emptyIndex][emptyInnerIndex] = bot;
-      return;
-    }
-    board[emptyIndex][emptyInnerIndex] = "  ";
-  }
-
-  if (board[1][1] === "  ") {
-    board[1][1] = bot;
-    return;
-  }
-
+function takingCorners(board, bot) {
   let corners = [[0, 0], [0, 2], [2, 0], [2, 2]];
   for (let index = 0; index < corners.length; index++) {
     const cornerIndex = corners[index][0];
     const cornerInnerIndex = corners[index][1];
     if (board[cornerIndex][cornerInnerIndex] === "  ") {
       board[cornerIndex][cornerInnerIndex] = bot;
-      return;
+      return true;
     }
+  }
+  return false
+}
+
+function block(board, bot, player, empty) {
+  for (let index = 0; index < empty.length; index++) {
+    const emptyIndex = empty[index][0];
+    const emptyInnerIndex = empty[index][1];
+    board[emptyIndex][emptyInnerIndex] = player;
+    if (checkWinner(board) === player) {
+      board[emptyIndex][emptyInnerIndex] = bot;
+      return true;
+    }
+    board[emptyIndex][emptyInnerIndex] = "  ";
+  }
+  return false;
+}
+
+function tryToWin(board, bot, empty) {
+  for (let index = 0; index < empty.length; index++) {
+    const emptyIndex = empty[index][0];
+    const emptyInnerIndex = empty[index][1];
+    board[emptyIndex][emptyInnerIndex] = bot;
+    if (checkWinner(board) === bot) {
+      return true;
+    }
+    board[emptyIndex][emptyInnerIndex] = "  ";
+  }
+  return false;
+}
+function botChance(board, bot, player) {
+  const empty = emptyCells(board);
+  //win
+  if (tryToWin(board, bot, empty)) {
+    return;
+  }
+
+  //block
+  if (block(board, bot, player, empty)) {
+    return;
+  }
+  //taking center
+  if (board[1][1] === "  ") {
+    board[1][1] = bot;
+    return;
+  }
+  //taking corners
+  if (takingCorners(board, bot)) {
+    return;
   }
 }
 
 function validInput(board) {
-  let row = checkValide("row");
-  let coloumn = checkValide("coloumn");
+  let row = checkValid("row");
+  let coloumn = checkValid("coloumn");
   if (board[row][coloumn] !== "  ") {
     console.log("⚠️ ENTERED PLACE IS ALREADY TAKEN");
     return validInput(board);
@@ -105,7 +124,7 @@ function validInput(board) {
   return [row, coloumn];
 }
 
-function checkValide(text) {
+function checkValid(text) {
   let isInvalideRow = true;
   let input = 0;
   while (isInvalideRow) {
@@ -141,7 +160,7 @@ function printWinner(winner) {
   if (winner) {
     return ("Player " + winner + " wins! 🎉");
   }
-  return "it is draw!";
+  return "it is draw!🤝";
 }
 
 function start() {
@@ -157,4 +176,4 @@ function start() {
   play(board, player, bot, winner);
 }
 
-start();
+start(); 
