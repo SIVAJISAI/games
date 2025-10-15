@@ -10,15 +10,15 @@ function printBoard(board) {
 
 function checkWinner(board) {
   // Rows
-  for (let i = 0; i < 3; i++) {
-    if (board[i][0] !== "  " && board[i][0] === board[i][1] && board[i][1] === board[i][2]) {
-      return board[i][0];
+  for (let index = 0; index < 3; index++) {
+    if (board[index][0] !== "  " && board[index][0] === board[index][1] && board[index][1] === board[index][2]) {
+      return board[index][0];
     }
   }
   // Cols
-  for (let i = 0; i < 3; i++) {
-    if (board[0][i] !== "  " && board[0][i] === board[1][i] && board[1][i] === board[2][i]) {
-      return board[0][i];
+  for (let index = 0; index < 3; index++) {
+    if (board[0][index] !== "  " && board[0][index] === board[1][index] && board[1][index] === board[2][index]) {
+      return board[0][index];
     }
   }
   // Diagonally
@@ -56,7 +56,6 @@ function emptyCells(board) {
 
 function botChance(board, bot, player) {
   const empty = emptyCells(board);
-  console.log(empty);
   //win
   for (let index = 0; index < empty.length; index++) {
     const emptyIndex = empty[index][0];
@@ -96,46 +95,53 @@ function botChance(board, bot, player) {
   }
 }
 
+function validInput(board) {
+  let row = checkValide("row");
+  let coloumn = checkValide("coloumn");
+  if (board[row][coloumn] !== "  ") {
+    console.log("⚠️ ENTERED PLACE IS ALREADY TAKEN");
+    return validInput(board);
+  }
+  return [row, coloumn];
+}
+
+function checkValide(text) {
+  let isInvalideRow = true;
+  let input = 0;
+  while (isInvalideRow) {
+    input = parseInt(prompt(`enter  valid ${text}:`));
+    isInvalideRow = (isNaN(input) || input < 0 || input > 2);
+  }
+  return input;
+}
+
 function play(board, player, bot, winner) {
-  while (!isBoardFull(board) && winner === null) {
+  while (!isBoardFull(board) && !winner) {
     console.log("player: ", player);
-    const row = parseInt(prompt("enter row"));
-    const coloumn = parseInt(prompt("enter coloumn"));
-
-    if (isNaN(row) || isNaN(coloumn) || row < 0 || row > 2 || coloumn < 0 || coloumn > 2) {
-      console.log("Invalid input! Please enter numbers between 0 and 2");
-      continue;
-    }
-
-    if (board[row][coloumn] !== "  ") {
-      console.log("⚠️ ENTERED PLACE IS ALREADY TAKEN");
-      continue;
-    }
-
+    const userInputs = validInput(board);
+    const row = userInputs[0];
+    const coloumn = userInputs[1];
     board[row][coloumn] = player;
     console.clear();
     printBoard(board);
 
     winner = checkWinner(board);
-    if (winner) {
-      break;
-    }
-
-    botChance(board, bot, player);
-    console.clear();
-    printBoard(board);
-
-    winner = checkWinner(board);
-    if (winner) {
-      break;
+    if (!winner) {
+      botChance(board, bot, player);
+      console.clear();
+      printBoard(board);
+      winner = checkWinner(board);
     }
   }
 
+  console.log(printWinner(winner));
+}
+
+function printWinner(winner) {
   if (winner) {
-    console.log("Player " + winner + " wins! 🎉");
-  } else {
-    console.log("It's a draw!");
+    return ("Player " + winner + " wins! 🎉");
   }
+  return "it is draw!";
 }
 
 function start() {
@@ -147,7 +153,7 @@ function start() {
   printBoard(board);
   let player = "❌";
   let bot = "🅾️";
-  let winner = null;
+  let winner = false;
   play(board, player, bot, winner);
 }
 
