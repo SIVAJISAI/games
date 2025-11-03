@@ -20,8 +20,8 @@ function outOrNotOut(run) {
   return true;
 }
 
-function firstBat(target = null) {
-  console.log("\nYOU ARE NOW BATTING 🏏\n");
+function batting(target = null) {
+  console.log("\x1B[1m \n YOU ARE NOW BATTING 🏏\n\x1B[0m");
   let stillBatting = true;
 
   while (stillBatting) {
@@ -52,15 +52,15 @@ function isOut(run) {
   return true;
 }
 
-function firstBowl(target = null) {
-  console.log("\nYOU ARE NOW BOWLING ☄️");
+function bowling(target = null) {
+  console.log("\x1B[1m \nYOU ARE NOW BOWLING ☄️\x1B[0m");
   let isNotOut = true;
 
   while (isNotOut) {
     const run = parseInt(prompt("bowl a number"));
     isNotOut = isOut(run, target);
     if (target !== null && compScore > target) {
-      console.log("🤖 CHASED THE TARGET SUCCESSFULLY 🎯");
+      console.log("\n🤖 CHASED THE TARGET SUCCESSFULLY 🎯");
       isNotOut = false;
     }
   }
@@ -89,13 +89,13 @@ function toss() {
   const result = choice === actualToss ? choice : actualToss;
 
   if (result === "bat") {
-    firstBat();
+    batting();
     console.log("🤖 WILL NOW CHASE YOUR SCORE");
-    firstBowl(userScore);
+    bowling(userScore);
   } else {
-    firstBowl();
+    bowling();
     console.log("YOU HAVE TO CHASE 🤖's SCORE NOW");
-    firstBat(compScore);
+    batting(compScore);
   }
   decideWinner(userScore, compScore);
 }
